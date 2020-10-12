@@ -32,10 +32,11 @@ class DoublyLinkedList {
         const poppedNode = this.tail
         if (this.length > 1) {
             this.tail = this.tail.previous
+            poppedNode.previous = null
         }
         this.tail.next = null
         this.length--
-        return poppedNode.value
+        return poppedNode
     }
 
     shift() {
@@ -43,10 +44,11 @@ class DoublyLinkedList {
         const shiftedNode = this.head
         if(this.length > 1) {
             this.head = this.head.next
+            shiftedNode.next = null
         }
         this.head.previous = null
         this.length--
-        return shiftedNode.value
+        return shiftedNode
     }
 
     unshift(value) {
@@ -59,6 +61,7 @@ class DoublyLinkedList {
         if (!this.tail) {
             this.tail = newNode
         }
+        this.length++
         return this
     } 
 
@@ -99,27 +102,45 @@ class DoublyLinkedList {
                 return undefined
             }
         } 
-        let selectedNode = this.get(index - 1)
-        if (selectedNode) {
+        let beforeNode = this.get(index - 1)
+        if (beforeNode) {
             let newNode = new Node(value)
-            newNode.previous = selectedNode
-            newNode.next = selectedNode.next
-            selectedNode.next = newNode
+            let afterNode = beforeNode.next
+            newNode.previous = beforeNode
+            beforeNode.next = newNode
+            afterNode.previous = newNode
+            newNode.next = afterNode
             this.length++
-            return this
+            return true
         }
         return undefined
     }
 
     remove(index) {
         if (this.length === 0) return undefined
+        if (index === 0) return this.shift(index)
+        if (index === this.length - 1) return this.pop(index)
         let selectedNode = this.get(index)
         if (selectedNode) {
             selectedNode.previous.next = selectedNode.next
             selectedNode.next.previous = selectedNode.previous
+            selectedNode.previous = null
+            selectedNode.next = null
+            this.length--
             return this
         }
         return undefined
+    }
+
+    reverse() {
+        if (this.length === 1) return this;
+        [this.head, this.tail] = [this.tail, this.head];
+        let current = this.head;
+        while (current) {
+            [current.prev, current.next] = [current.next, current.prev];
+            current = current.next;
+        }
+        return this;
     }
 
 
